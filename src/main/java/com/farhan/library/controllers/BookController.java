@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -19,14 +20,14 @@ public class BookController {
     BookRepository bookRepository;
 
     @GetMapping("/load")
-    public Object loadBookPageable() {
+    public Object loadBookPageable(@RequestParam(required = false) String keyword) {
 
         Response response = new Response();
 
         try {
             List<Map<String, Object>> datas = new ArrayList<>();
             Map<String, Object> data = new HashMap<>();
-            List<Books> books = bookRepository.findAll();
+            List<Books> books = keyword != null ? bookRepository.getBooksByKeyword(keyword) : bookRepository.findAll();
             for(Books book : books){
                 Map<String, Object> loop = new HashMap<>();
                 loop.put("bookId", book.getBookId());
