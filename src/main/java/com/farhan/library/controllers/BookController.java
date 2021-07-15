@@ -1,19 +1,16 @@
 package com.farhan.library.controllers;
 
 import com.farhan.library.Constans;
+import com.farhan.library.models.Books;
 import com.farhan.library.payload.Response;
 import com.farhan.library.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/book")
@@ -21,18 +18,28 @@ public class BookController {
     @Autowired
     BookRepository bookRepository;
 
-    @GetMapping("/ceritaKEKL/load")
-    public Object loadCeritaKeklPageable(Pageable pageable, @RequestParam(required = false) String keyword, @RequestParam Long isEng) {
+    @GetMapping("/load")
+    public Object loadBookPageable() {
 
         Response response = new Response();
 
         try {
-            boolean isEnglish = isEng == 1;
+            List<Map<String, Object>> datas = new ArrayList<>();
+            Map<String, Object> data = new HashMap<>();
+            List<Books> books = bookRepository.findAll();
+            for(Books book : books){
+                Map<String, Object> loop = new HashMap<>();
+                loop.put("bookId", book.getBookId());
+                loop.put("title", book.getTitle());
+                loop.put("yearRelease", book.getYearRelease());
+                datas.add(loop);
+            }
+            data.put("data", datas);
 
 
             response.setRC("00");
             response.setMessage("Success");
-            response.setData(null);
+            response.setData(data);
             response.setResponseType(Constans.RESPONSE_TYPE_SUCCESS);
             return ResponseEntity.ok().body(response);
 
